@@ -259,24 +259,32 @@ protected String name;
 		return isPersistent;
 	}
 	
-	// given a block (a location), find the growth rate using these rules
-	
-	public double getRate(Block block) {
-		Double biomeMultiplier = biomeMultipliers.get(block.getBiome());
+	public double getBiomeRate(Biome biome) {
+		Double biomeMultiplier = biomeMultipliers.get(biome);
 	    if (biomeMultiplier == null || biomeMultiplier.floatValue() == 0.0) {
 	        return 0.0;
 	    }
 
-	    if (type == Type.FISHING_DROP) {
-	        return baseRate * biomeMultiplier.floatValue();
-	    }
 	    double rate;
 	    if (isPersistent) {
 	        rate = 1.0 / (persistentRate * SEC_PER_HOUR);
 	    } else {
 	        rate = baseRate;
 	    }
-	    rate *= biomeMultiplier.floatValue();
+	    return rate * biomeMultiplier.floatValue();
+	}
+	
+	// given a block (a location), find the growth rate using these rules
+	public double getRate(Block block) {
+	    if (type == Type.FISHING_DROP) {
+	        return baseRate * getBiomeRate(block.getBiome());
+	    }
+
+	    double rate = getBiomeRate(block.getBiome());
+	    if (rate == 0.0) {
+	    	return 0.0;
+	    }
+	    
 		if (isGreenhouseEnabled && block.getLightFromBlocks() == (MAX_LIGHT_INTENSITY - 1)) {
 			boolean found = false;
 			for( Vector vec : adjacentBlocks ) {
@@ -368,5 +376,41 @@ protected String name;
 	
 	public void setAllowTreasureEnchantments(boolean ench){
 		this.allowTreasureEnchant = ench;
+	}
+
+	public int getSoilMaxLayers() {
+		return soilMaxLayers;
+	}
+
+	public Material getSoilMaterial() {
+		return soilMaterial;
+	}
+
+	public int getSoilLayerOffset() {
+		return soilLayerOffset;
+	}
+
+	public double getSoilBonusPerLevel() {
+		return soilBonusPerLevel;
+	}
+
+	public byte getSoilData() {
+		return soilData;
+	}
+
+	public boolean needsSunLight() {
+		return needsSunlight;
+	}
+
+	public double getNotFullSunlightMultiplier() {
+		return notFullSunlightMultiplier;
+	}
+
+	public boolean isGreenhouseEnabled() {
+		return isGreenhouseEnabled;
+	}
+
+	public double getGreenhouseRate() {
+		return greenhouseRate;
 	}
 }

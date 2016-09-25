@@ -1,6 +1,5 @@
 package com.untamedears.realisticbiomes.listener;
 
-import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +17,7 @@ import com.untamedears.realisticbiomes.RealisticBiomes;
 import com.untamedears.realisticbiomes.persist.Plant;
 import com.untamedears.realisticbiomes.utils.Fruits;
 import com.untamedears.realisticbiomes.utils.MaterialAliases;
+import com.untamedears.realisticbiomes.utils.PlayerMessages;
 
 public class PlayerListener implements Listener {
 	
@@ -112,8 +112,7 @@ public class PlayerListener implements Listener {
 			RealisticBiomes.doLog(Level.FINER, "PlayerListener.onPlayerInteractEvent(): rate adjusted to "  + rate);
 			
 			if (plant == null) {
-				String amount = new DecimalFormat("#0.00").format(rate);
-				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": "+amount+" hours to maturity");
+				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": " + PlayerMessages.hoursToMaturity(rate, false));
 				
 			} else if (plant.getGrowth() == 1.0) {
 				if (Fruits.isFruitFul(block.getType())) {
@@ -129,9 +128,8 @@ public class PlayerListener implements Listener {
 								fruitRate = (1.0/(fruitRate*(60.0*60.0/*seconds per hour*/)));
 								RealisticBiomes.doLog(Level.FINER, "PlayerListener.onPlayerInteractEvent(): fruit rate adjusted to "  + fruitRate);
 								
-								String amount = new DecimalFormat("#0.00").format(fruitRate);
-								String pAmount = new DecimalFormat("#0.00").format(fruitRate*(1.0-plant.getFruitGrowth()));
-								event.getPlayer().sendMessage("§7[Realistic Biomes] \""+growthConfig.getName()+"\": "+pAmount+" of "+amount+" hours to maturity");
+								String pAmount = PlayerMessages.hours(fruitRate*(1.0-plant.getFruitGrowth()));
+								event.getPlayer().sendMessage("§7[Realistic Biomes] \""+growthConfig.getName()+"\": "+pAmount+" of " + PlayerMessages.hoursToMaturity(rate, false));
 								return;
 							}
 						}
@@ -140,15 +138,13 @@ public class PlayerListener implements Listener {
 				}
 				
 				RealisticBiomes.doLog(Level.FINER, "PlayerListener.onPlayerInteractEvent(): plant fruit is: " + plant.getFruitGrowth());
-				String amount = new DecimalFormat("#0.00").format(rate);
-				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": "+amount+" hours to maturity");
+				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": " + PlayerMessages.hoursToMaturity(rate, false));
 
 			} else {
 				
 				RealisticBiomes.doLog(Level.FINER, "PlayerListener.onPlayerInteractEvent(): plant growth is: " + plant.getGrowth());
-				String amount = new DecimalFormat("#0.00").format(rate);
-				String pAmount = new DecimalFormat("#0.00").format(rate*(1.0-plant.getGrowth()));
-				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": "+pAmount+" of "+amount+" hours to maturity");
+				String pAmount = PlayerMessages.hours(rate*(1.0-plant.getGrowth()));
+				event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + materialName + "\": "+pAmount+" of " + PlayerMessages.hoursToMaturity(rate, false));
 			}
 			
 		} else {
@@ -160,16 +156,9 @@ public class PlayerListener implements Listener {
 				growthAmount = 1.0;
 			else if (growthAmount < 0.0)
 				growthAmount = 0.0;
-			String amount = new DecimalFormat("#0.00").format(growthAmount*100.0)+"%";
 			
-			String rateType;
-			if (growthConfig.getType() == GrowthConfig.Type.ENTITY) {
-				rateType = "Spawn rate";
-			} else {
-				rateType = "Growth rate";
-			}
 			// send the message out to the user!
-			event.getPlayer().sendMessage("§7[Realistic Biomes] " + rateType + " \"" + materialName + "\" = "+amount);
+			event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + growthConfig.getName() + "\" " + PlayerMessages.spawnRate(growthAmount, false, growthConfig.getType() == GrowthConfig.Type.ENTITY));
 		}
 	}
 	
@@ -189,9 +178,8 @@ public class PlayerListener implements Listener {
 				growthAmount = 1.0;
 			else if (growthAmount < 0.0)
 				growthAmount = 0.0;
-			String amount = new DecimalFormat("#0.00").format(growthAmount*100.0)+"%";
 			// send the message out to the user!
-			event.getPlayer().sendMessage("§7[Realistic Biomes] Spawn rate \""+growthConfig.getName()+"\" = "+amount);
+			event.getPlayer().sendMessage("§7[Realistic Biomes] \"" + growthConfig.getName() + "\" " + PlayerMessages.spawnRate(growthAmount, false, true));
 		}
 	}
 }

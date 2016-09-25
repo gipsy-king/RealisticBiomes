@@ -1,5 +1,6 @@
 package com.untamedears.realisticbiomes.utils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,11 +51,34 @@ public class MaterialAliases {
 
 		materialAliases.put(Material.FISHING_ROD, Material.RAW_FISH);
 	}
+
+	private static Map<Material, Material> itemAliases = new HashMap<Material, Material>();
+	static {
+		itemAliases.put(Material.POTATO, Material.POTATO_ITEM);
+		itemAliases.put(Material.MELON_BLOCK, Material.MELON);
+		itemAliases.put(Material.BEETROOT_BLOCK, Material.BEETROOT);
+		itemAliases.put(Material.SEEDS, Material.WHEAT);
+		itemAliases.put(Material.CROPS, Material.WHEAT);
+	}
 	
 	public static Material getBlockFromItem(Material material) {
 		return materialAliases.get(material);
 	}
 
+	public static Material getItemFromBlock(Material material) {
+		for(Material key: itemAliases.keySet()) {
+			if (key == material) {
+				return itemAliases.get(key);
+			}
+		}
+		for(Material key: materialAliases.keySet()) {
+			if (materialAliases.get(key) == material) {
+				return key;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * There is a bug in spigot/bukkit, where the species of a sapling is retrieved the
 	 * same way as from a log, which is wrong.
@@ -91,6 +115,10 @@ public class MaterialAliases {
 	@SuppressWarnings("deprecation")
 	public static TreeType getTreeType(Block candidate) {
 		return getTreeType(candidate.getData());
+	}
+
+	public static byte getSaplingData(TreeType type) {
+		return (byte) Arrays.asList(speciesMap).indexOf(type);
 	}
 
 	/**

@@ -37,7 +37,13 @@
       <artifactId>Spigot</artifactId>
       <version>1.10</version>
       <scope>provided</scope>
-	</dependency>
+    </dependency>
+    <dependency>
+      <groupId>vg.civcraft.mc.civmodcore</groupId>
+      <artifactId>CivModCore</artifactId>
+      <version>1.5.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <repositories>
@@ -49,5 +55,9 @@
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 	</repository>
+    <repository>
+      <id>Jenkins-repo</id>
+      <url>http://build.civcraft.co/plugin/repository/everything/</url>
+    </repository>
   </repositories>
 </project>

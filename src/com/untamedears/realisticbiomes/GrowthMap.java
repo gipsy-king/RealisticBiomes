@@ -117,7 +117,7 @@ public class GrowthMap {
 	}
 
 	/**
-	 * For debugging purposes only
+	 * Returns a Set of Material, Entity and TreeType
 	 */
 	public Set<Object> keySet() {
 		Set<Object> sets = new HashSet<Object>();

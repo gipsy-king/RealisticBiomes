@@ -10,12 +10,15 @@ import org.bukkit.Material;
 import org.bukkit.TreeType;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.untamedears.realisticbiomes.GrowthConfig.Type;
+import com.untamedears.realisticbiomes.command.RealisticBiomesCommandHandler;
 import com.untamedears.realisticbiomes.listener.GrowListener;
 import com.untamedears.realisticbiomes.listener.PlayerListener;
 import com.untamedears.realisticbiomes.listener.SpawnListener;
@@ -25,6 +28,8 @@ import com.untamedears.realisticbiomes.persist.Plant;
 import com.untamedears.realisticbiomes.persist.PlantManager;
 import com.untamedears.realisticbiomes.utils.Fruits;
 import com.untamedears.realisticbiomes.utils.MaterialAliases;
+
+import vg.civcraft.mc.civmodcore.inventorygui.ClickableInventoryListener;
 
 public class RealisticBiomes extends JavaPlugin {
 
@@ -42,9 +47,11 @@ public class RealisticBiomes extends JavaPlugin {
 	public PersistConfig persistConfig;
 	private PlantManager plantManager;
 
+	private RealisticBiomesCommandHandler commandHandler;
 	
 	@Override
-	public void onEnable() {		
+	public void onEnable() {
+		super.onEnable();
 		RealisticBiomes.plugin = this;
 		
 		RealisticBiomes.LOG = this.getLogger();
@@ -91,6 +98,8 @@ public class RealisticBiomes extends JavaPlugin {
 		RealisticBiomes.LOG.info("Logging hack, log level is set to: " + RealisticBiomes.minLogLevel.toString());
 		RealisticBiomes.LOG.info("Caching entire database? " + this.persistConfig.cacheEntireDatabase);
 		
+		commandHandler = new RealisticBiomesCommandHandler(materialGrowth);
+		commandHandler.registerCommands();
 		registerEvents();
 		
 		if (persistConfig.enabled) {
@@ -318,6 +327,7 @@ public class RealisticBiomes extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		super.onDisable();
 		if (persistConfig.enabled) {
 			LOG.info("saving plant growth data.");
 			plantManager.saveAllAndStop();
@@ -332,15 +342,14 @@ public class RealisticBiomes extends JavaPlugin {
 			pm.registerEvents(new GrowListener(this), this);
 			pm.registerEvents(new SpawnListener(materialGrowth, fishSpawn), this);
 			pm.registerEvents(new PlayerListener(this, materialGrowth), this);
+			pm.registerEvents(new ClickableInventoryListener(), this);
 		}
 		catch(Exception e)
 		{
 			LOG.severe("caught an exception while attempting to register events with the PluginManager: " + e);
 		}
 	}
-	
-	// -----------------------------------
-	
+
 	/**
 	 * grow the specified block, return the new growth magnitude
 	 * @param block The block to grow
@@ -461,5 +470,15 @@ public class RealisticBiomes extends JavaPlugin {
 	
 	public PlantManager getPlantManager() {
 		return plantManager;
+	}
+	
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		return commandHandler == null ? null : commandHandler.complete(sender, cmd, args);
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		return commandHandler == null ? false : commandHandler.execute(sender, command, args);
 	}
 }

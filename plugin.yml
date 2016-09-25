@@ -1,5 +1,10 @@
 name: ${project.name}
 main: com.untamedears.realisticbiomes.RealisticBiomes
 load: STARTUP
+depend: [CivModCore]
 version: ${project.version}
 description: RealisticBiomes makes farming harder by limiting growth rates of crops and making them only grow well in certain biomes.
+commands:
+  rb:
+    description: Shows growth rates in player location
+    usage: /rb
